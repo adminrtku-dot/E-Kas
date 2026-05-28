@@ -1,0 +1,13 @@
+function getDatabase() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (ss) return ss;
+  
+  // Jika standalone, cari file bernama 'Database Iuran Kas Warga' di Google Drive
+  const files = DriveApp.getFilesByName('Database Iuran Kas Warga');
+  if (files.hasNext()) {
+    const file = files.next();
+    return SpreadsheetApp.openById(file.getId());
+  }
+  
+  throw new Error("Database Spreadsheet tidak ditemukan. Silakan jalankan fungsi 'initData' terlebih dahulu.");
+}
