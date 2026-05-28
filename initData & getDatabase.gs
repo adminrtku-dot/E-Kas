@@ -75,7 +75,9 @@ function initData() {
   }
 }
 
-
+/**
+ * Helper: Mendapatkan spreadsheet database secara aman
+ */
 
 function getDatabase() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
