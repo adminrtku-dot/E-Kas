@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iuran Kas Warga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        green: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .hide { display: none !important; }
+    </style>
+</head>
+<body class="antialiased text-gray-800 min-h-screen flex items-center justify-center p-4">
+
+    <!-- App Container -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative min-h-[600px] flex flex-col">
+        
+        <!-- Header -->
+        <div class="bg-green-600 text-white p-6 text-center">
+            <h1 class="text-2xl font-bold tracking-wide"><i class="fas fa-wallet mr-2"></i> E-Kas Warga</h1>
+            <p class="text-green-100 text-sm mt-1">Transparan, Mudah, & Modern</p>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg text-sm transition-opacity duration-300 opacity-0 pointer-events-none z-50">
+            Pesan Notifikasi
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="p-6 flex-1 flex flex-col">
+
+            <!-- 1. LOGIN PAGE -->
+            <div id="pageLogin" class="flex-1 flex flex-col justify-center">
+                <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Masuk ke Akun Anda</h2>
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="text" id="username" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" placeholder="Masukkan username">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" id="password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" placeholder="Masukkan password">
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-600 focus:outline-none">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="btnLogin" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center">
+                        Masuk
+                    </button>
+                </form>
+                
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    Belum punya akun atau lupa password?<br>
+                    <a href="https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20ingin%20request%20username%20dan%20password%20untuk%20Aplikasi%20Kas%20Warga." target="_blank" class="inline-flex items-center mt-2 text-green-600 hover:text-green-800 font-medium">
+                        <i class="fab fa-whatsapp text-lg mr-1"></i> Request via WhatsApp
+                    </a>
+                </div>
+                
+                <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-500 text-center">
+                    <b>Demo Login:</b><br>
+                    Admin: <code>admin</code> / <code>admin123</code><br>
+                    Warga: <code>warga</code> / <code>warga123</code>
+                </div>
+            </div>
+
+            <!-- 2. ADMIN DASHBOARD -->
+            <div id="pageAdmin" class="hide flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Dashboard Admin</h2>
+                        <p class="text-sm text-gray-500">Halo, <span id="adminName">Admin</span></p>
+                    </div>
+                    <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-medium"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+
+                <div class="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold text-green-900 mb-3"><i class="fas fa-plus-circle mr-1"></i> Input Data Transaksi</h3>
+                    <form id="formInputAdmin" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
+                                <input type="date" id="inputTgl" required class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Jenis</label>
+                                <select id="inputJenis" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                                    <option value="Pemasukan">Pemasukan (Iuran)</option>
+                                    <option value="Pengeluaran">Pengeluaran</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Nama Warga (Jika Iuran)</label>
+                            <select id="inputWarga" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                                <option value="-">- Pilih Warga -</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                            <input type="number" id="inputNominal" required placeholder="50000" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Keterangan</label>
+                            <input type="text" id="inputKet" required placeholder="Iuran bulan Mei" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                        </div>
+                        <button type="submit" id="btnSimpanAdmin" class="w-full bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 rounded transition-colors">
+                            Simpan Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. WARGA DASHBOARD -->
+            <div id="pageWarga" class="hide flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Beranda Warga</h2>
+                        <p class="text-sm text-gray-500">Halo, <span id="wargaName">Warga</span></p>
+                    </div>
+                    <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-medium"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+
+                <!-- Info Cards -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-green-600 text-white rounded-xl p-4 shadow">
+                        <p class="text-xs text-green-100 mb-1">Total Saldo Kas RT</p>
+                        <h3 class="text-lg font-bold" id="wargaSaldoRp">Rp 0</h3>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm" id="wargaStatusCard">
+                        <p class="text-xs text-gray-500 mb-1">Status Iuran Saya</p>
+                        <h3 class="text-sm font-bold text-red-600" id="wargaStatusText">Tunggakan: Rp 0</h3>
+                    </div>
+                </div>
+
+                <!-- 5 Latest Transactions -->
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3 flex items-center"><i class="fas fa-history text-green-600 mr-2"></i> 5 Arus Kas Terakhir</h3>
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                        <ul id="wargaListKas" class="divide-y divide-gray-100">
+                            <!-- Injected via JS -->
+                            <li class="p-4 text-center text-sm text-gray-500">Memuat data...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // MOCK BACKEND FOR CANVAS PREVIEW
+        // ==========================================
+        // Logika ini hanya agar aplikasi berjalan di preview. 
+        // Jika dijalankan di Google Apps Script, fungsi google.script.run akan mengambil alih.
+        const mockDatabase = {
+            users: [
+                { user: 'admin', pass: 'admin123', role: 'admin', name: 'Bapak RT (Admin)' },
+                { user: 'warga', pass: 'warga123', role: 'warga', name: 'Budi Santoso' }
+            ],
+            kas: [
+                { tgl: '2026-05-01', jenis: 'Pemasukan', nominal: 50000, ket: 'Iuran Mei', warga: 'Budi Santoso' },
+                { tgl: '2026-05-03', jenis: 'Pemasukan', nominal: 50000, ket: 'Iuran Mei', warga: 'Siti Aminah' },
+                { tgl: '2026-05-10', jenis: 'Pengeluaran', nominal: 35000, ket: 'Beli Sapu Lidi', warga: '-' },
+                { tgl: '2026-05-15', jenis: 'Pemasukan', nominal: 50000, ket: 'Iuran Mei', warga: 'Andi' },
+                { tgl: '2026-05-20', jenis: 'Pengeluaran', nominal: 15000, ket: 'Fotocopy Edaran', warga: '-' },
+            ]
+        };
+
+        function callServer(method, args = []) {
+            return new Promise((resolve, reject) => {
+                // Gunakan GAS jika tersedia
+                if (typeof google !== 'undefined' && google.script && google.script.run) {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        [method].apply(null, args);
+                } else {
+                    // Fallback Mock Server untuk Preview
+                    console.log(`[Mock Server] Executing ${method}`, args);
+                    setTimeout(() => {
+                        if(method === 'loginUser') {
+                            const [u, p] = args;
+                            const user = mockDatabase.users.find(x => x.user === u && x.pass === p);
+                            if(user) resolve({success: true, role: user.role, name: user.name, username: user.user});
+                            else resolve({success: false, message: "Username atau password salah!"});
+                        } 
+                        else if (method === 'getWargaList') {
+                            const list = mockDatabase.users.filter(x => x.role === 'warga').map(x => x.name);
+                            resolve(list);
+                        }
+                        else if (method === 'getWargaDashboard') {
+                            const totalMasuk = mockDatabase.kas.filter(k => k.jenis === 'Pemasukan').reduce((a,b)=>a+b.nominal, 0);
+                            const totalKeluar = mockDatabase.kas.filter(k => k.jenis === 'Pengeluaran').reduce((a,b)=>a+b.nominal, 0);
+                            const saldo = totalMasuk - totalKeluar;
+                            
+                            // Mock Tunggakan (misal target 150.000, budi bayar 50.000, sisa 100.000)
+                            const [username] = args;
+                            const myName = mockDatabase.users.find(u => u.user === username)?.name;
+                            const myPaid = mockDatabase.kas.filter(k => k.warga === myName).reduce((a,b)=>a+b.nominal, 0);
+                            const tunggakan = 150000 - myPaid; 
+
+                            const last5 = [...mockDatabase.kas].reverse().slice(0, 5);
+                            resolve({saldo, tunggakan, last5});
+                        }
+                        else if (method === 'simpanTransaksi') {
+                            const [data] = args;
+                            mockDatabase.kas.push(data);
+                            resolve({success: true});
+                        }
+                    }, 600); // Simulasi delay jaringan
+                }
+            });
+        }
+
+        // ==========================================
+        // FRONTEND LOGIC
+        // ==========================================
+        
+        let currentUser = null;
+
+        const formatRp = (angka) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        };
+
+        const showToast = (msg, isError = false) => {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-lg text-sm transition-opacity duration-300 z-50 ${isError ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'}`;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        };
+
+        const switchPage = (pageId) => {
+            document.getElementById('pageLogin').classList.add('hide');
+            document.getElementById('pageAdmin').classList.add('hide');
+            document.getElementById('pageWarga').classList.add('hide');
+            document.getElementById(pageId).classList.remove('hide');
+        };
+
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwdInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Login Submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const btn = document.getElementById('btnLogin');
+            
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const res = await callServer('loginUser', [u, p]);
+                if (res.success) {
+                    currentUser = res;
+                    if (res.role === 'admin') {
+                        document.getElementById('adminName').textContent = res.name;
+                        switchPage('pageAdmin');
+                        // Set default date to today
+                        document.getElementById('inputTgl').valueAsDate = new Date();
+                        // Memuat daftar dropdown warga secara otomatis
+                        loadWargaDropdown();
+                    } else {
+                        document.getElementById('wargaName').textContent = res.name;
+                        loadWargaDashboard(res.username);
+                        switchPage('pageWarga');
+                    }
+                } else {
+                    showToast(res.message, true);
+                }
+            } catch (err) {
+                showToast("Terjadi kesalahan jaringan", true);
+            } finally {
+                btn.innerHTML = 'Masuk';
+                btn.disabled = false;
+            }
+        });
+
+        // Ambil daftar warga terdaftar dan masukkan ke elemen dropdown select
+        async function loadWargaDropdown() {
+            const dropdown = document.getElementById('inputWarga');
+            dropdown.innerHTML = '<option value="-">- Memuat warga... -</option>';
+            try {
+                const list = await callServer('getWargaList');
+                dropdown.innerHTML = '<option value="-">- Pilih Warga -</option>';
+                list.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    dropdown.appendChild(opt);
+                });
+            } catch (err) {
+                dropdown.innerHTML = '<option value="-">- Gagal memuat warga -</option>';
+            }
+        }
+
+        // Load Warga Data
+        async function loadWargaDashboard(username) {
+            const listEl = document.getElementById('wargaListKas');
+            listEl.innerHTML = '<li class="p-4 text-center text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat...</li>';
+            
+            try {
+                const data = await callServer('getWargaDashboard', [username]);
+                
+                // Update Saldo & Status
+                document.getElementById('wargaSaldoRp').textContent = formatRp(data.saldo);
+                
+                const statusCard = document.getElementById('wargaStatusCard');
+                const statusText = document.getElementById('wargaStatusText');
+                
+                if (data.tunggakan > 0) {
+                    statusCard.className = "bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm";
+                    statusText.className = "text-sm font-bold text-red-600";
+                    statusText.textContent = `Tunggakan: ${formatRp(data.tunggakan)}`;
+                } else if (data.tunggakan < 0) {
+                    statusCard.className = "bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm";
+                    statusText.className = "text-sm font-bold text-green-600";
+                    statusText.textContent = `Kelebihan: ${formatRp(Math.abs(data.tunggakan))}`;
+                } else {
+                    statusCard.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm";
+                    statusText.className = "text-sm font-bold text-gray-600";
+                    statusText.textContent = "Lunas (Tidak ada tunggakan)";
+                }
+
+                // Update List
+                if(data.last5.length === 0) {
+                    listEl.innerHTML = '<li class="p-4 text-center text-sm text-gray-500">Belum ada transaksi.</li>';
+                } else {
+                    listEl.innerHTML = '';
+                    data.last5.forEach(item => {
+                        const isMasuk = item.jenis === 'Pemasukan';
+                        const icon = isMasuk ? 'fa-arrow-down text-green-500' : 'fa-arrow-up text-red-500';
+                        const sign = isMasuk ? '+' : '-';
+                        
+                        const li = document.createElement('li');
+                        li.className = "p-3 flex justify-between items-center hover:bg-gray-50 transition-colors";
+                        li.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="fas ${icon} text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">${item.ket}</p>
+                                    <p class="text-xs text-gray-500">${item.tgl} ${isMasuk && item.warga !== '-' ? '• '+item.warga : ''}</p>
+                                </div>
+                            </div>
+                            <div class="text-sm font-bold ${isMasuk ? 'text-green-600' : 'text-gray-700'}">
+                                ${sign}${formatRp(item.nominal).replace('Rp','')}
+                            </div>
+                        `;
+                        listEl.appendChild(li);
+                    });
+                }
+            } catch(e) {
+                listEl.innerHTML = '<li class="p-4 text-center text-sm text-red-500">Gagal memuat data.</li>';
+            }
+        }
+
+        // Admin Simpan Transaksi
+        document.getElementById('formInputAdmin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSimpanAdmin');
+            
+            const payload = {
+                tgl: document.getElementById('inputTgl').value,
+                jenis: document.getElementById('inputJenis').value,
+                warga: document.getElementById('inputWarga').value || '-',
+                nominal: parseInt(document.getElementById('inputNominal').value),
+                ket: document.getElementById('inputKet').value
+            };
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+
+            try {
+                const res = await callServer('simpanTransaksi', [payload]);
+                if(res.success) {
+                    showToast("Data berhasil disimpan!");
+                    document.getElementById('formInputAdmin').reset();
+                    document.getElementById('inputTgl').valueAsDate = new Date();
+                } else {
+                    showToast("Gagal menyimpan data", true);
+                }
+            } catch(err) {
+                showToast("Error jaringan", true);
+            } finally {
+                btn.innerHTML = 'Simpan Data';
+                btn.disabled = false;
+            }
+        });
+
+        // Toggle Warga Input based on Jenis
+        document.getElementById('inputJenis').addEventListener('change', function() {
+            const inputWarga = document.getElementById('inputWarga');
+            if(this.value === 'Pengeluaran') {
+                inputWarga.value = '-';
+                inputWarga.disabled = true;
+                inputWarga.classList.add('bg-gray-100');
+            } else {
+                inputWarga.disabled = false;
+                inputWarga.classList.remove('bg-gray-100');
+            }
+        });
+
+        const logout = () => {
+            currentUser = null;
+            document.getElementById('loginForm').reset();
+            switchPage('pageLogin');
+        };
+
+    </script>
+</body>
+</html>
+
