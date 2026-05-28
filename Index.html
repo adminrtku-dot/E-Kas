@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iuran Kas Warga</title>
+    <title>Iuran Kas Warga - Gg. Mutiara 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -18,6 +18,11 @@
                             600: '#059669',
                             700: '#047857',
                             900: '#064e3b',
+                        },
+                        brand: {
+                            dark: '#022c22', /* Hijau sangat gelap untuk background header */
+                            light: '#6ee7b7', /* Hijau terang untuk teks Mutiara */
+                            gold: '#fbbf24' /* Kuning emas untuk aksen Dermo */
                         }
                     }
                 }
@@ -25,7 +30,7 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .hide { display: none !important; }
     </style>
@@ -87,8 +92,7 @@
                 <span class="text-[11px] tracking-[0.2em] font-bold text-brand-gold">DERMO</span>
             </div>
         </div>
-            
-            
+
         <!-- Notification Toast -->
         <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg text-sm transition-opacity duration-300 opacity-0 pointer-events-none z-50">
             Pesan Notifikasi
@@ -97,8 +101,8 @@
         <!-- MAIN CONTENT AREA -->
         <div class="p-6 flex-1 flex flex-col">
 
-<!-- 1. LOGIN PAGE -->
-<div id="pageLogin" class="flex-1 flex flex-col justify-center">
+            <!-- 1. LOGIN PAGE -->
+            <div id="pageLogin" class="flex-1 flex flex-col justify-center">
                 <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Masuk ke Akun Anda</h2>
                 <form id="loginForm" class="space-y-4">
                     <div>
@@ -129,14 +133,17 @@
                 
                 <div class="mt-8 text-center text-sm text-gray-500">
                     Belum punya akun atau lupa password?<br>
-                    <a href="https://wa.me/6285730647464?text=Halo%20%5FAdmin%5F,%20saya%20ingin%20request%20username%20dan%20password%20untuk%20%2A%5FAplikasi%20Kas%20Warga%5F%2A.%0ANama%20%20%20%20%20%20%20%20%20:%0AUsername%20:%0APassword%20%20:%0A%5FTerima%20kasih.%5F" target="_blank" class="inline-flex items-center mt-2 text-green-600 hover:text-green-800 font-medium">
+                    <a href="https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20ingin%20request%20username%20dan%20password%20untuk%20Aplikasi%20Kas%20Warga." target="_blank" class="inline-flex items-center mt-2 text-green-600 hover:text-green-800 font-medium">
                         <i class="fab fa-whatsapp text-lg mr-1"></i> Request via WhatsApp
                     </a>
                 </div>
                 
-     
+                <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-500 text-center">
+                    <b>Demo Login:</b><br>
+                    Admin: <code>admin</code> / <code>admin123</code><br>
+                    Warga: <code>warga</code> / <code>warga123</code>
+                </div>
             </div>
-
 
             <!-- 2. ADMIN DASHBOARD -->
             <div id="pageAdmin" class="hide flex-1 flex flex-col">
@@ -172,7 +179,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Nominal (Rp)</label>
-                            <input type="number" id="inputNominal" required placeholder="5000" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
+                            <input type="number" id="inputNominal" required placeholder="50000" class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Keterangan</label>
@@ -226,12 +233,12 @@
         // ==========================================
         // MOCK BACKEND FOR CANVAS PREVIEW
         // ==========================================
-        // Logika ini hanya agar aplikasi berjalan di preview. 
-        // Jika dijalankan di Google Apps Script, fungsi google.script.run akan mengambil alih.
         const mockDatabase = {
             users: [
                 { user: 'admin', pass: 'admin123', role: 'admin', name: 'Bapak RT (Admin)' },
-                { user: 'warga', pass: 'warga123', role: 'warga', name: 'Budi Santoso' }
+                { user: 'warga', pass: 'warga123', role: 'warga', name: 'Budi Santoso' },
+                { user: 'siti', pass: 'siti123', role: 'warga', name: 'Siti Aminah' },
+                { user: 'andi', pass: 'andi123', role: 'warga', name: 'Andi' }
             ],
             kas: [
                 { tgl: '2026-05-01', jenis: 'Pemasukan', nominal: 50000, ket: 'Iuran Mei', warga: 'Budi Santoso' },
@@ -244,15 +251,12 @@
 
         function callServer(method, args = []) {
             return new Promise((resolve, reject) => {
-                // Gunakan GAS jika tersedia
                 if (typeof google !== 'undefined' && google.script && google.script.run) {
                     google.script.run
                         .withSuccessHandler(resolve)
                         .withFailureHandler(reject)
                         [method].apply(null, args);
                 } else {
-                    // Fallback Mock Server untuk Preview
-                    console.log(`[Mock Server] Executing ${method}`, args);
                     setTimeout(() => {
                         if(method === 'loginUser') {
                             const [u, p] = args;
@@ -260,16 +264,11 @@
                             if(user) resolve({success: true, role: user.role, name: user.name, username: user.user});
                             else resolve({success: false, message: "Username atau password salah!"});
                         } 
-                        else if (method === 'getWargaList') {
-                            const list = mockDatabase.users.filter(x => x.role === 'warga').map(x => x.name);
-                            resolve(list);
-                        }
                         else if (method === 'getWargaDashboard') {
                             const totalMasuk = mockDatabase.kas.filter(k => k.jenis === 'Pemasukan').reduce((a,b)=>a+b.nominal, 0);
                             const totalKeluar = mockDatabase.kas.filter(k => k.jenis === 'Pengeluaran').reduce((a,b)=>a+b.nominal, 0);
                             const saldo = totalMasuk - totalKeluar;
                             
-                            // Mock Tunggakan (misal target 150.000, budi bayar 50.000, sisa 100.000)
                             const [username] = args;
                             const myName = mockDatabase.users.find(u => u.user === username)?.name;
                             const myPaid = mockDatabase.kas.filter(k => k.warga === myName).reduce((a,b)=>a+b.nominal, 0);
@@ -283,7 +282,13 @@
                             mockDatabase.kas.push(data);
                             resolve({success: true});
                         }
-                    }, 600); // Simulasi delay jaringan
+                        else if (method === 'getWargaList') {
+                            const listWarga = mockDatabase.users
+                                .filter(u => u.role === 'warga')
+                                .map(u => u.name);
+                            resolve(listWarga);
+                        }
+                    }, 600);
                 }
             });
         }
@@ -313,7 +318,23 @@
             document.getElementById(pageId).classList.remove('hide');
         };
 
-        // Toggle Password Visibility
+        async function loadWargaDropdown() {
+            const selectEl = document.getElementById('inputWarga');
+            selectEl.innerHTML = '<option value="-">Memuat daftar...</option>';
+            try {
+                const listWarga = await callServer('getWargaList');
+                selectEl.innerHTML = '<option value="-">- Pilih Warga -</option>';
+                listWarga.forEach(nama => {
+                    const opt = document.createElement('option');
+                    opt.value = nama;
+                    opt.textContent = nama;
+                    selectEl.appendChild(opt);
+                });
+            } catch(e) {
+                selectEl.innerHTML = '<option value="-">Gagal memuat warga</option>';
+            }
+        }
+
         document.getElementById('togglePassword').addEventListener('click', function() {
             const pwdInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -328,7 +349,6 @@
             }
         });
 
-        // Login Submit
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const u = document.getElementById('username').value;
@@ -345,10 +365,8 @@
                     if (res.role === 'admin') {
                         document.getElementById('adminName').textContent = res.name;
                         switchPage('pageAdmin');
-                        // Set default date to today
                         document.getElementById('inputTgl').valueAsDate = new Date();
-                        // Memuat daftar dropdown warga secara otomatis
-                        loadWargaDropdown();
+                        loadWargaDropdown(); 
                     } else {
                         document.getElementById('wargaName').textContent = res.name;
                         loadWargaDashboard(res.username);
@@ -365,25 +383,6 @@
             }
         });
 
-        // Ambil daftar warga terdaftar dan masukkan ke elemen dropdown select
-        async function loadWargaDropdown() {
-            const dropdown = document.getElementById('inputWarga');
-            dropdown.innerHTML = '<option value="-">- Memuat warga... -</option>';
-            try {
-                const list = await callServer('getWargaList');
-                dropdown.innerHTML = '<option value="-">- Pilih Warga -</option>';
-                list.forEach(name => {
-                    const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.textContent = name;
-                    dropdown.appendChild(opt);
-                });
-            } catch (err) {
-                dropdown.innerHTML = '<option value="-">- Gagal memuat warga -</option>';
-            }
-        }
-
-        // Load Warga Data
         async function loadWargaDashboard(username) {
             const listEl = document.getElementById('wargaListKas');
             listEl.innerHTML = '<li class="p-4 text-center text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat...</li>';
@@ -391,7 +390,6 @@
             try {
                 const data = await callServer('getWargaDashboard', [username]);
                 
-                // Update Saldo & Status
                 document.getElementById('wargaSaldoRp').textContent = formatRp(data.saldo);
                 
                 const statusCard = document.getElementById('wargaStatusCard');
@@ -411,7 +409,6 @@
                     statusText.textContent = "Lunas (Tidak ada tunggakan)";
                 }
 
-                // Update List
                 if(data.last5.length === 0) {
                     listEl.innerHTML = '<li class="p-4 text-center text-sm text-gray-500">Belum ada transaksi.</li>';
                 } else {
@@ -445,7 +442,6 @@
             }
         }
 
-        // Admin Simpan Transaksi
         document.getElementById('formInputAdmin').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSimpanAdmin');
@@ -453,7 +449,7 @@
             const payload = {
                 tgl: document.getElementById('inputTgl').value,
                 jenis: document.getElementById('inputJenis').value,
-                warga: document.getElementById('inputWarga').value || '-',
+                warga: document.getElementById('inputWarga').value,
                 nominal: parseInt(document.getElementById('inputNominal').value),
                 ket: document.getElementById('inputKet').value
             };
@@ -467,6 +463,7 @@
                     showToast("Data berhasil disimpan!");
                     document.getElementById('formInputAdmin').reset();
                     document.getElementById('inputTgl').valueAsDate = new Date();
+                    document.getElementById('inputWarga').value = '-';
                 } else {
                     showToast("Gagal menyimpan data", true);
                 }
@@ -478,16 +475,15 @@
             }
         });
 
-        // Toggle Warga Input based on Jenis
         document.getElementById('inputJenis').addEventListener('change', function() {
-            const inputWarga = document.getElementById('inputWarga');
+            const selectWarga = document.getElementById('inputWarga');
             if(this.value === 'Pengeluaran') {
-                inputWarga.value = '-';
-                inputWarga.disabled = true;
-                inputWarga.classList.add('bg-gray-100');
+                selectWarga.value = '-';
+                selectWarga.disabled = true;
+                selectWarga.classList.add('bg-gray-100');
             } else {
-                inputWarga.disabled = false;
-                inputWarga.classList.remove('bg-gray-100');
+                selectWarga.disabled = false;
+                selectWarga.classList.remove('bg-gray-100');
             }
         });
 
@@ -500,4 +496,3 @@
     </script>
 </body>
 </html>
-
