@@ -1,3 +1,82 @@
+/**
+ * 2. Inisialisasi Database
+ * Fungsi ini membuat Spreadsheet baru secara otomatis jika standalone,
+ * serta menyiapkan konfigurasi Tanggal_Mulai untuk perhitungan tunggakan otomatis.
+ */
+function initData() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Penanganan jika skrip dijalankan secara standalone (ss bernilai null)
+  if (!ss) {
+    try {
+      ss = SpreadsheetApp.create('Database Iuran Kas Warga');
+      Logger.log('Spreadsheet baru berhasil dibuat karena tidak ada spreadsheet aktif yang terdeteksi.');
+      Logger.log('URL Spreadsheet baru Anda: ' + ss.getUrl());
+    } catch (err) {
+      throw new Error("Gagal membuat Spreadsheet baru. Pastikan akun Anda memiliki izin akses Google Drive. Detail: " + err.message);
+    }
+  }
+  
+  // Setup Sheet "Users"
+  let sheetUsers = ss.getSheetByName('Users');
+  if (!sheetUsers) {
+    sheetUsers = ss.insertSheet('Users');
+    sheetUsers.appendRow(['Username', 'Password', 'Role', 'Nama_Lengkap']);
+    // Buat data dummy default
+    sheetUsers.appendRow(['admin', 'admin123', 'admin', 'Bapak RT']);
+    sheetUsers.appendRow(['warga', 'warga123', 'warga', 'Budi Santoso']);
+    // Format Header
+    sheetUsers.getRange("A1:D1").setFontWeight("bold").setBackground("#d1fae5");
+  }
+
+  // Setup Sheet "Kas"
+  let sheetKas = ss.getSheetByName('Kas');
+  if (!sheetKas) {
+    sheetKas = ss.insertSheet('Kas');
+    sheetKas.appendRow(['Tanggal', 'Jenis', 'Nominal', 'Keterangan', 'Nama_Warga']);
+    sheetKas.getRange("A1:E1").setFontWeight("bold").setBackground("#d1fae5");
+  }
+  
+  // Setup Sheet "Pengaturan" (Untuk konfigurasi iuran dan tanggal mulai)
+  let sheetSet = ss.getSheetByName('Pengaturan');
+  if (!sheetSet) {
+    sheetSet = ss.insertSheet('Pengaturan');
+    sheetSet.appendRow(['Kunci', 'Nilai']);
+    sheetSet.appendRow(['Iuran_Bulanan', 50000]); // Default Iuran Rp 50.000 / bulan
+    sheetSet.appendRow(['Tanggal_Mulai', '2026-01-01']); // Format: YYYY-MM-DD (Kas dimulai dari Januari 2026)
+    sheetSet.getRange("A1:B1").setFontWeight("bold").setBackground("#d1fae5");
+  } else {
+    // Jika sheet sudah ada tapi belum ada baris Tanggal_Mulai, kita tambahkan
+    const dataSet = sheetSet.getDataRange().getValues();
+    let adaTanggalMulai = false;
+    for(let i = 1; i < dataSet.length; i++) {
+      if(dataSet[i][0] === 'Tanggal_Mulai') adaTanggalMulai = true;
+    }
+    if(!adaTanggalMulai) {
+      sheetSet.appendRow(['Tanggal_Mulai', '2026-01-01']);
+    }
+  }
+
+  // Hapus Sheet default bawaan "Sheet1" / "Sheet 1" jika ada agar rapi
+  let defaultSheet = ss.getSheetByName('Sheet1') || ss.getSheetByName('Sheet 1');
+  if (defaultSheet && ss.getSheets().length > 1) {
+    ss.deleteSheet(defaultSheet);
+  }
+
+  // Tampilkan informasi sukses
+  const msg = "Inisialisasi Database Berhasil!\n\n" +
+              "Silakan cek Google Sheets Anda.\n" +
+              "URL: " + ss.getUrl();
+              
+  try {
+    SpreadsheetApp.getUi().alert(msg);
+  } catch(e) {
+    Logger.log(msg);
+  }
+}
+
+
+
 function getDatabase() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (ss) return ss;
