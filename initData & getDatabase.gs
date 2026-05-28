@@ -1,5 +1,5 @@
 /**
- * 2. Inisialisasi Database
+ * 1. Inisialisasi Database
  * Fungsi ini membuat Spreadsheet baru secara otomatis jika standalone,
  * serta menyiapkan konfigurasi Tanggal_Mulai untuk perhitungan tunggakan otomatis.
  */
@@ -76,7 +76,7 @@ function initData() {
 }
 
 /**
- * Helper: Mendapatkan spreadsheet database secara aman
+ * 2. Mengambil Database: Mendapatkan spreadsheet database secara aman
  */
 
 function getDatabase() {
