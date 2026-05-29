@@ -93,9 +93,7 @@
             </div>
         </div>
 
-        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg text-sm transition-opacity duration-300 opacity-0 pointer-events-none z-50">
-            Pesan Notifikasi
-        </div>
+    
 
         <div class="p-5 flex-1 flex flex-col overflow-y-auto max-h-[50px]">
 
@@ -124,6 +122,12 @@
                             </button>
                         </div>
                     </div>
+
+                      <div id="error-box" class="hidden p-5 flex-1 flex flex-col overflow-y-auto max-h-[500px] bg-red-50 text-red-600 border border-red-300 rounded">
+    <h3 class="font-bold mb-2">Terjadi Kesalahan!</h3>
+    <p>Username atau password yang Anda masukkan tidak sesuai. Silakan coba lagi.</p>
+                      </div>
+                    
                     <button type="submit" id="btnLogin" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center">
                         Masuk
                     </button>
